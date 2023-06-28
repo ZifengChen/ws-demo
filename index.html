@@ -1,0 +1,55 @@
+<!--
+ * @Author: czf
+ * @Date: 2023-06-28 10:01:22
+ * @LastEditors: czf
+ * @LastEditTime: 2023-06-28 10:28:30
+ * @FilePath: index.html
+ * @Description:
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>
+      <ul id="list"></ul>
+      <input type="text" id="input" />
+      <button id="send">发送</button>
+      <button id="stop">停止</button>
+    </div>
+    <script>
+      // webSocket
+      const ws = new WebSocket('ws://localhost:8080');
+      // open连接成功
+      ws.addEventListener('open', function (event) {
+        console.log('连接成功');
+      });
+
+      let input = document.querySelector('#input');
+      let btn = document.querySelector('#send');
+      let list = document.querySelector('#list');
+      let stop = document.querySelector('#stop');
+      btn.addEventListener('click', function () {
+        // 发送消息send
+        if (input.value) {
+          ws.send(input.value);
+          input.value = '';
+        }
+      });
+      ws.addEventListener('message', (e) => {
+        let li = document.createElement('li');
+        let data = JSON.parse(e.data);
+        //if (data.type === 2) {
+        li.innerText = data.message;
+        list.appendChild(li);
+        //}
+      });
+      stop.addEventListener('click', function () {
+        ws.close();
+      });
+    </script>
+  </body>
+</html>
